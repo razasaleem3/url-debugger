@@ -43,18 +43,19 @@ add_action( 'plugins_loaded', function () {
         return;
     }
 
-    $supplied = isset( $_GET['debug_key'] ) ? sanitize_text_field( wp_unslash( $_GET['debug_key'] ) ) : '';
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- token comparison IS the auth check; no nonce applicable here.
+    $supplied = isset( $_GET['debug_key'] ) ? sanitize_text_field( wp_unslash( $_GET['debug_key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
     // Constant-time comparison prevents timing attacks
     if ( ! hash_equals( $token, $supplied ) ) {
         return;
     }
 
-    // PHP error display
-    error_reporting( E_ALL );
-    ini_set( 'display_errors',         '1' );
-    ini_set( 'display_startup_errors', '1' );
-    ini_set( 'log_errors',             '1' );
+    // PHP error display — required for this plugin's core purpose.
+    error_reporting( E_ALL ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting
+    ini_set( 'display_errors',         '1' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+    ini_set( 'display_startup_errors', '1' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+    ini_set( 'log_errors',             '1' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
 
     // WordPress debug constants (only if not already locked in wp-config.php)
     if ( ! defined( 'WP_DEBUG' ) )         define( 'WP_DEBUG',         true );
